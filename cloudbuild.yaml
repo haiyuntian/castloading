@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions',
+         'deploy',
+         'streaming',
+         '--trigger-bucket=${FILES_SOURCE}',
+         '--runtime=python37',
+         '--source=./functions/ingest_file',
+         '--entry-point=ingest_file',
+         '--timeout=540',
+         '--region=${REGION}'
+  ]

@@ -3,10 +3,12 @@ steps:
   args: ['functions',
          'deploy',
          'streaming',
-         '--trigger-bucket=${FILES_SOURCE}',
+         '--trigger-bucket=gs://ab-scanner-dev-files-source-dm',
          '--runtime=python37',
          '--source=./functions/ingest_file',
+         '--stage-bucket=gs://ab-scanner-dev-functions-dm',
          '--entry-point=ingest_file',
          '--timeout=540',
-         '--region=${REGION}'
+         '--region=europe-west2',
+         '--project=ab-scanner-dev'
   ]

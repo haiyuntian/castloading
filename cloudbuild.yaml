@@ -12,3 +12,31 @@ steps:
          '--region=europe-west2',
          '--project=ab-scanner-dev'
   ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions',
+         'deploy',
+         'streaming_error',
+         '--source=./functions/ingest_file',
+         '--entry-point=move_file',
+         '--timeout=540',
+         '--runtime=python37',
+         '--stage-bucket=gs://ab-scanner-dev-functions-dm',
+         '--trigger-topic=streaming_error_topic',
+         '--set-env-vars SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-error-dm'
+         '--region=europe-west2',
+         '--project=ab-scanner-dev'
+  ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions',
+         'deploy',
+         'streaming_success',
+         '--source=./functions/ingest_file',
+         '--entry-point=move_file',
+         '--timeout=540',
+         '--runtime=python37',
+         '--stage-bucket=gs://ab-scanner-dev-functions-dm',
+         '--trigger-topic=streaming_success_topic',
+         '--set-env-vars SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-success-dm'
+         '--region=europe-west2',
+         '--project=ab-scanner-dev'
+  ]

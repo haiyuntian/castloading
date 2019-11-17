@@ -11,7 +11,8 @@ steps:
          '--trigger-topic=streaming_error_topic',
          '--region=europe-west2',
          '--project=ab-scanner-dev',
-         '--set-env-vars SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-error-dm'
+         '--set-env-vars',
+         'SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-error-dm'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['functions',
@@ -25,7 +26,8 @@ steps:
          '--trigger-topic=streaming_success_topic',
          '--region=europe-west2',
          '--project=ab-scanner-dev',
-         '--set-env-vars SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-success-dm'
+         '--set-env-vars',
+         'SOURCE_BUCKET=gs://ab-scanner-dev-files-source-dm,DESTINATION_BUCKET=gs://ab-scanner-dev-files-success-dm'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['functions',

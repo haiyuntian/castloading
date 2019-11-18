@@ -14,12 +14,13 @@
 
 
 '''
-This Cloud function is responsible for:
+These Cloud functions are responsible for:
 - Parsing and validating new files added to Cloud Storage.
 - Checking for duplications.
 - Inserting files' content into BigQuery.
 - Logging the ingestion status into Cloud Firestore and Stackdriver.
 - Publishing a message to either an error or success topic in Cloud Pub/Sub.
+- Move file from source bucket to either archive bucket or error bucket.
 '''
 
 import json
@@ -38,7 +39,6 @@ import pytz
 
 from utility import read_config
 
-
 config = read_config()
 PROJECT_ID = config[r'devshell_project_id']
 BQ_DATASET = config[r'dataset']
@@ -51,7 +51,7 @@ PS = pubsub_v1.PublisherClient()
 BQ = bigquery.Client()
 
 def move_file(data, context):
-    '''This function is executed from a Cloud Pub/Sub'''
+    '''This function is triggered by a Cloud Pub/Sub'''
     message = base64.b64decode(data['data']).decode('utf-8')
     logging.info("move_file receive the message {}".format(message))
     file_name = data['attributes']['file_name']
@@ -80,7 +80,14 @@ def move_file(data, context):
                  message)
 
 def ingest_file_external(data, context):
-    '''This function is executed whenever a file is added to Cloud Storage'''
+    '''
+        This function is triggered by Cloud Storage bucket.
+
+        This function is obsoleted because BQ external data source can lead to
+        a potential high data query cost.
+
+        This code will be removed once confirming the decision.
+    '''
     bucket_name = data['bucket']
     file_name = data['name']
     file_path = 'gs://{}/{}'.format(bucket_name, file_name)
@@ -128,8 +135,12 @@ def ingest_file_external(data, context):
             logging.info('table creation fails {}'.format(table_id))
 
 
+
 def ingest_file(data, context):
-    '''This function is executed whenever a file is added to Cloud Storage'''
+    '''
+        This function is triggered by Cloud Storage bucket.
+
+    '''
     bucket_name = data['bucket']
     file_name = data['name']
     file_path = 'gs://{}/{}'.format(bucket_name, file_name)
@@ -156,8 +167,6 @@ def ingest_file(data, context):
     table_suffix = _table_suffix()
     table_id = '{}_{}'.format(BQ_TABLE, table_suffix)
     logging.info('Start table creation {}'.format(table_id))
-
-    #table = bigquery.Table(dataset_ref.table(table_id), schema=schema)
 
     job_config = bigquery.LoadJobConfig()
     job_config.schema = schema

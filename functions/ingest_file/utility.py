@@ -1,5 +1,5 @@
 import configparser
-import os
+
 
 def read_config():
     config = configparser.RawConfigParser()
@@ -10,7 +10,3 @@ def read_config():
         details_dict = dict(config.items("dummy_section"))
         return details_dict
 
-config = read_config()
-
-print(config)
-print(config[r'devshell_project_id'])
